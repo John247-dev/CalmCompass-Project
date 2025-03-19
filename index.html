@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CalmCompass</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="images/compass.png" alt="Compass Icon" class="compass-icon" />
+      <h1>CalmCompass</h1>
+    </div>
+    <p class="subtitle">Navigate to a Healthier, Longer Life</p>
+
+    <section class="settings-container">
+        <h2>Settings</h2>
+        <div class="settings-options">
+          <label>Response Speed:</label>
+          <select id="response-speed">
+            <option value="fast">Fast</option>
+            <option value="normal" selected>Normal</option>
+            <option value="slow">Slow</option>
+          </select>
+          <label>Background Image:</label>
+          <select id="bg-image" onchange="changeBackground()">
+            <option value="nature1">Nature Forest</option>
+            <option value="nature2">Mountain Lake</option>
+            <option value="nature3">Ocean Sunset</option>
+            <option value="nature4">Starry Night</option>
+          </select>
+        </div>
+      </section>
+
+      <div class="auth-container">
+        <button onclick="showAuthModal('login')">Login</button>
+        <button onclick="showAuthModal('signup')">Signup</button>
+      </div>
+      
+      <div id="auth-modal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeAuthModal()">&times;</span>
+          <h2 id="modal-title"></h2>
+          <form id="auth-form">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Submit</button>
+            <p id="forgot-password" onclick="showForgotPassword()">Forgot Password?</p>
+          </form>
+          <p id="auth-message"></p>
+        </div>
+      </div>
+
+      <section class="invite-container">
+        <h2>Invite Friends</h2>
+        <input id="invite-email" type="email" placeholder="Friend's Email">
+        <button onclick="sendInvite()">Send Invite</button>
+      </section>
+</header>
+  <main>
+    <section class="stress-container">
+      <h2>How Are You Feeling?</h2>
+      <div class="stress-input">
+        <input id="trigger" type="text" placeholder="What’s on your mind?">
+        <select id="tag">
+          <option value="work">Work</option>
+          <option value="family">Family</option>
+          <option value="relationships">Relationships</option>
+          <option value="health">Health</option>
+          <option value="other">Other</option>
+        </select>
+        <select id="mood">
+          <option value="happy">😊 Happy</option>
+          <option value="anxious">😟 Anxious</option>
+          <option value="tired">😴 Tired</option>
+          <option value="angry">😡 Angry</option>
+          <option value="calm">😌 Calm</option>
+        </select>
+        <button onclick="saveTrigger()">Submit</button>
+      </div>
+      <p id="suggestion"></p>
+    </section>
+
+    <section class="tools-container">
+      <h2>Calming Tools</h2>
+      <div class="tools">
+        <div class="breathing-tool">
+          <select id="breathing-duration">
+            <option value="30">30s</option>
+            <option value="60" selected>1min</option>
+            <option value="120">2min</option>
+          </select>
+          <button onclick="startBreathing()">Guided Breathing</button>
+          <label><input type="checkbox" id="sound-toggle"> Soothing Sound</label>
+          <p id="timer"></p>
+        </div>
+        <button onclick="showSleepTips()">Sleep Tips</button>
+        <p id="sleep-tips"></p>
+      </div>
+      <div class="music-options">
+        <h3>Background Sounds</h3>
+        <select id="bg-sound">
+          <option value="relaxing">Relaxing Music</option>
+          <option value="waves">Ocean Waves</option>
+          <option value="forest">Forest Ambience</option>
+          <option value="rain">Rainfall</option>
+        </select>
+        <button onclick="playBackgroundSound()">Play</button>
+        <button onclick="stopBackgroundSound()">Stop</button>
+        <audio id="bg-music" src="audio/relaxing.mp3" loop></audio>
+        <audio id="wave-sound" src="audio/waves.mp3" loop></audio>
+        <audio id="forest-sound" src="audio/forest.mp3" loop></audio>
+        <audio id="rain-sound" src="audio/rain.mp3" loop></audio>
+    </div>
+    </section>
+
+    <section class="chat-container">
+      <h2>Live AI Chat</h2>
+      <div class="chat-box" id="chat-box"></div>
+      <div class="chat-input">
+        <input id="chat-input" type="text" placeholder="Ask me anything...">
+        <input id="chat-file" type="file" accept="image/*,audio/*">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </section>
+
+    <section class="insights-container">
+      <h2>Your Insights</h2>
+      <div class="extras">
+        <label><input type="checkbox" id="daily-reminder" onchange="toggleReminder()"> Daily Reminder</label>
+        <p id="daily-tip"></p>
+        <p id="streak">Streak: 0 days</p>
+      </div>
+      <button onclick="showMoodChart()">View Mood Chart</button>
+      <canvas id="moodChart" width="400" height="200"></canvas>
+      <button onclick="downloadHistory()">Download History</button>
+      <button onclick="shareHistory()">Share History</button>
+    </section>
+
+    <section class="history-container">
+      <h2>Your Journey</h2>
+      <ul id="history"></ul>
+    </section>
+  </main>
+
+  <audio id="bg-music" src="https://www.bensound.com/bensound-music/bensound-relaxing.mp3" loop></audio>
+  <audio id="wave-sound" src="https://www.soundjay.com/nature/ocean-waves-1.mp3" loop></audio>
+  <audio id="forest-sound" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-61905/zapsplat_nature_forest_birds_ambience_62303.mp3" loop></audio>
+  <audio id="rain-sound" src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-61905/zapsplat_nature_rain_light_62305.mp3" loop></audio>
+  <script src="script.js"></script>
+
+    <footer>
+        <p>&copy; 2025 iExtreme Soutions</p>
+</body>
+</html>
