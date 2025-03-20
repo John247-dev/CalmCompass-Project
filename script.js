@@ -1,17 +1,38 @@
-// Initialize data storage
+// Data storage
 let historyData = JSON.parse(localStorage.getItem('history')) || [];
 let streak = localStorage.getItem('streak') || 0;
 let lastDate = localStorage.getItem('lastDate') || null;
 let moodData = JSON.parse(localStorage.getItem('moodData')) || {};
 let chartInstance = null;
+let currentAudio = null;
 
-// Load history and streak on page load
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     updateHistory();
     updateStreak();
+    updateCompass();
 });
 
-// Save trigger and provide AI suggestion
+// Compass functionality
+function updateCompass() {
+    if ('DeviceOrientationEvent' in window) {
+        window.addEventListener('deviceorientation', (event) => {
+            const compass = document.getElementById('compass-icon');
+            const heading = event.webkitCompassHeading || event.alpha;
+            if (heading !== null) {
+                compass.style.transform = `rotate(${-heading}deg)`;
+            }
+        });
+    } else {
+        let angle = 0;
+        setInterval(() => {
+            angle = (angle + 1) % 360;
+            document.getElementById('compass-icon').style.transform = `rotate(${angle}deg)`;
+        }, 50);
+    }
+}
+
+// Save trigger and provide suggestion
 function saveTrigger() {
     const trigger = document.getElementById('trigger').value;
     const tag = document.getElementById('tag').value;
@@ -24,29 +45,19 @@ function saveTrigger() {
         document.getElementById('trigger').value = '';
         provideSuggestion(trigger, tag, mood);
         updateMoodData(mood);
+        updateStreak();
     }
 }
 
 function provideSuggestion(trigger, tag, mood) {
-    let suggestion = '';
-    switch (mood) {
-        case 'happy':
-            suggestion = `Great to hear you're happy! Keep it up by sharing positivity today. How about a quick gratitude exercise?`;
-            break;
-        case 'anxious':
-            suggestion = `Feeling anxious about ${tag}? Take 5 deep breaths and focus on something you can control right now. Want to try guided breathing?`;
-            break;
-        case 'tired':
-            suggestion = `Exhausted from ${tag}? Rest is key—try a 1-minute breathing exercise or check out sleep tips below.`;
-            break;
-        case 'angry':
-            suggestion = `Upset about ${tag}? Let’s channel that energy—try a quick walk or a breathing session to cool off.`;
-            break;
-        case 'calm':
-            suggestion = `You’re feeling calm—perfect! How about maintaining it with some forest sounds or a mindfulness moment?`;
-            break;
-    }
-    document.getElementById('suggestion').textContent = suggestion;
+    const suggestions = {
+        happy: `Yay, you're happy about ${tag}! How about sharing that joy with a friend today?`,
+        anxious: `Anxious about ${tag}? Try this: breathe in for 4, hold for 4, exhale for 4. Feel better?`,
+        tired: `Tired from ${tag}? Take a moment to rest with some ocean waves—want to try?`,
+        angry: `Angry about ${tag}? Let’s release it: imagine blowing it away with each breath.`,
+        calm: `Calm amidst ${tag}? Perfect—enhance it with forest sounds or a quiet moment.`
+    };
+    document.getElementById('suggestion').textContent = suggestions[mood] || 'Tell me more!';
 }
 
 // Guided breathing exercise
@@ -55,16 +66,26 @@ function startBreathing() {
     const soundToggle = document.getElementById('sound-toggle').checked;
     const timer = document.getElementById('timer');
     let timeLeft = duration;
-    timer.textContent = `Breathe... (${timeLeft}s)`;
+    timer.textContent = `Inhale... (${timeLeft}s)`;
 
-    if (soundToggle) document.getElementById('wave-sound').play();
+    if (soundToggle) {
+        stopBackgroundSound();
+        currentAudio = document.getElementById('waves-sound');
+        currentAudio.play();
+    }
+
+    let phase = 'inhale';
     const interval = setInterval(() => {
         timeLeft--;
-        timer.textContent = `Breathe... (${timeLeft}s)`;
-        if (timeLeft <= 0) {
+        if (phase === 'inhale' && timeLeft <= duration / 2) {
+            phase = 'exhale';
+            timer.textContent = `Exhale... (${timeLeft}s)`;
+        } else if (timeLeft <= 0) {
             clearInterval(interval);
             timer.textContent = 'Well done!';
-            if (soundToggle) document.getElementById('wave-sound').pause();
+            if (soundToggle) currentAudio.pause();
+        } else {
+            timer.textContent = `${phase === 'inhale' ? 'Inhale' : 'Exhale'}... (${timeLeft}s)`;
         }
     }, 1000);
 }
@@ -72,10 +93,10 @@ function startBreathing() {
 // Sleep tips
 function showSleepTips() {
     const tips = [
-        'Stick to a consistent sleep schedule.',
-        'Avoid screens 1 hour before bed.',
-        'Try a relaxing sound like rainfall.',
-        'Keep your room cool and dark.'
+        'Dim the lights and play some rain sounds.',
+        'Avoid caffeine after 3 PM—try herbal tea!',
+        'Keep a notepad by your bed to jot down thoughts.',
+        'Stretch gently before lying down.'
     ];
     document.getElementById('sleep-tips').textContent = tips[Math.floor(Math.random() * tips.length)];
 }
@@ -84,19 +105,23 @@ function showSleepTips() {
 function playBackgroundSound() {
     const sound = document.getElementById('bg-sound').value;
     stopBackgroundSound();
-    document.getElementById(`${sound}-sound`).play();
+    currentAudio = document.getElementById(`${sound}-sound`);
+    currentAudio.play().catch(err => console.log("Audio play failed:", err));
 }
 
 function stopBackgroundSound() {
-    document.querySelectorAll('audio').forEach(audio => audio.pause());
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
 }
 
-// Live AI Chat
+// AI Chat
 function sendMessage() {
     const input = document.getElementById('chat-input').value;
     const fileInput = document.getElementById('chat-file');
     const chatBox = document.getElementById('chat-box');
-    
+
     if (input || fileInput.files.length > 0) {
         const userMessage = document.createElement('p');
         userMessage.className = 'user-message';
@@ -118,27 +143,33 @@ function sendMessage() {
             }
         }
 
-        const aiResponse = document.createElement('p');
-        aiResponse.className = 'ai-message';
-        aiResponse.textContent = generateAIResponse(input, fileInput.files[0]);
-        chatBox.appendChild(aiResponse);
+        setTimeout(() => {
+            const aiResponse = document.createElement('p');
+            aiResponse.className = 'ai-message';
+            aiResponse.textContent = generateAIResponse(input, fileInput.files[0]);
+            chatBox.appendChild(aiResponse);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, adjustResponseSpeed());
 
         document.getElementById('chat-input').value = '';
         fileInput.value = '';
-        chatBox.scrollTop = chatBox.scrollHeight;
     }
 }
 
 function generateAIResponse(input, file) {
     if (file) {
-        if (file.type.startsWith('image/')) return `I see your image! How does this relate to your day? Let’s work through it together.`;
-        if (file.type.startsWith('audio/')) return `Thanks for the voice note! I’ll listen—tell me more about what’s going on.`;
+        if (file.type.startsWith('image/')) return `Wow, nice image! What’s the story behind it?`;
+        if (file.type.startsWith('audio/')) return `I heard your voice—tell me more about what’s on your mind!`;
     }
-    if (!input) return 'Tell me more—what’s on your mind?';
-    
-    if (input.toLowerCase().includes('stress')) return `Stress can be tough. Try this: inhale for 4, hold for 4, exhale for 4. How’s that feel?`;
-    if (input.toLowerCase().includes('sleep')) return `Struggling with sleep? Dim the lights, play some rain sounds, and avoid caffeine after 3 PM. Need more tips?`;
-    return `I’m here for you! You said: "${input}". What’s one small step you can take now to feel better?`;
+    if (!input) return 'What’s up? I’m here to help!';
+    if (input.toLowerCase().includes('stress')) return `Stress, huh? Let’s breathe it out—try the guided breathing tool!`;
+    if (input.toLowerCase().includes('sleep')) return `Sleep troubles? How about rain sounds and a dark room?`;
+    return `You said: "${input}". Let’s tackle it—any ideas on what might help?`;
+}
+
+function adjustResponseSpeed() {
+    const speed = document.getElementById('response-speed').value;
+    return { fast: 300, normal: 1000, slow: 2000 }[speed];
 }
 
 // Mood chart
@@ -156,7 +187,13 @@ function showMoodChart() {
     const datasets = moods.map(mood => ({
         label: mood,
         data: labels.map(date => moodData[date][mood] || 0),
-        backgroundColor: `rgba(${Math.random()*255}, ${Math.random()*255}, ${Math.random()*255}, 0.5)`
+        backgroundColor: {
+            happy: 'rgba(255, 235, 59, 0.5)',
+            anxious: 'rgba(244, 67, 54, 0.5)',
+            tired: 'rgba(100, 181, 246, 0.5)',
+            angry: 'rgba(255, 152, 0, 0.5)',
+            calm: 'rgba(129, 199, 132, 0.5)'
+        }[mood]
     }));
 
     if (chartInstance) chartInstance.destroy();
@@ -206,6 +243,8 @@ function updateStreak() {
         const yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toLocaleDateString();
         if (lastDate === yesterday) streak++;
         else streak = 1;
+    } else if (!lastDate) {
+        streak = 1;
     }
     localStorage.setItem('streak', streak);
     localStorage.setItem('lastDate', today);
@@ -216,28 +255,12 @@ function toggleReminder() {
     const enabled = document.getElementById('daily-reminder').checked;
     if (enabled) {
         setInterval(() => {
-            document.getElementById('daily-tip').textContent = 'Take a moment to breathe and reflect!';
+            document.getElementById('daily-tip').textContent = 'Take a deep breath—how’s your day going?';
         }, 24 * 60 * 60 * 1000);
     }
 }
 
-// Background sound control
-let currentAudio = null;
-
-function playBackgroundSound() {
-    const sound = document.getElementById('bg-sound').value;
-    stopBackgroundSound();
-    currentAudio = document.getElementById(`${sound}-sound`);
-    currentAudio.play().catch(err => console.log("Audio play failed:", err));
-}
-
-function stopBackgroundSound() {
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-    }
-}
-
+// Background change
 function changeBackground() {
     const bgImage = document.getElementById('bg-image').value;
     const backgrounds = {
@@ -249,34 +272,7 @@ function changeBackground() {
     document.body.style.backgroundImage = `url('${backgrounds[bgImage]}')`;
 }
 
-function adjustResponseSpeed() {
-    const speed = document.getElementById('response-speed').value;
-    const delays = { fast: 500, normal: 1000, slow: 2000 };
-    return delays[speed];
-}
-
-// Example usage in sendMessage (AI Chat response delay)
-function sendMessage() {
-    const input = document.getElementById('chat-input').value;
-    const chatBox = document.getElementById('chat-box');
-    if (input) {
-        const userMessage = document.createElement('p');
-        userMessage.className = 'user-message';
-        userMessage.textContent = input;
-        chatBox.appendChild(userMessage);
-
-        setTimeout(() => {
-            const aiResponse = document.createElement('p');
-            aiResponse.className = 'ai-message';
-            aiResponse.textContent = generateAIResponse(input);
-            chatBox.appendChild(aiResponse);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }, adjustResponseSpeed());
-
-        document.getElementById('chat-input').value = '';
-    }
-}
-
+// Authentication
 let users = JSON.parse(localStorage.getItem('users')) || {};
 
 function showAuthModal(type) {
@@ -330,11 +326,11 @@ function showForgotPassword() {
 function sendInvite() {
     const email = document.getElementById('invite-email').value;
     if (email) {
-        const inviteLink = `${window.location.href}?ref=${Math.random().toString(36).substr(2, 9)}`;
+        const inviteLink = `${window.location.href}?ref=${Math.random().toString(36).substring(2, 11)}`;
         if (navigator.share) {
             navigator.share({
                 title: 'Join CalmCompass!',
-                text: `Hey! Join me on CalmCompass to navigate a healthier life: ${inviteLink}`,
+                text: `Hey! Join me on CalmCompass for a calmer life: ${inviteLink}`,
                 url: inviteLink
             }).catch(err => alert('Invite failed: ' + err));
         } else {
