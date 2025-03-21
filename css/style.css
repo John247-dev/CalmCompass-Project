@@ -21,160 +21,172 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.25);
     z-index: 0;
 }
 
+/* Header */
 .header {
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     margin: 20px auto;
-    max-width: 1200px;
+    max-width: 90%;
+    width: 1200px;
 }
 
 .logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .compass-icon {
-    width: 80px;
-    height: 80px;
-    transition: transform 0.1s linear, filter 0.3s ease;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+    width: 90px;
+    height: 90px;
+    transition: transform 0.2s ease, filter 0.3s ease;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
 }
 
 .compass-icon:hover {
-    filter: drop-shadow(0 6px 16px rgba(76, 175, 80, 0.6)) brightness(1.2);
-    transform: scale(1.1);
+    filter: drop-shadow(0 8px 20px rgba(76, 175, 80, 0.7)) brightness(1.15);
+    transform: scale(1.15) rotate(10deg);
 }
 
+h1 {
+    font-size: 2.8em;
+    font-weight: 700;
+    color: #1a7f36;
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.subtitle {
+    font-size: 1.3em;
+    color: #4caf50;
+    font-weight: 300;
+    margin-top: 5px;
+}
+
+.nav {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Cards */
 .card {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.96);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), inset 0 0 12px rgba(255, 255, 255, 0.6);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(76, 175, 80, 0.35);
 }
 
 .card:active {
-    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.5);
-}
-
-h1 {
-    font-size: 2.5em;
-    font-weight: 700;
-    color: #1a7f36;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.subtitle {
-    font-size: 1.2em;
-    color: #4caf50;
-    font-weight: 300;
-}
-
-.nav {
-    margin-top: 15px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+    box-shadow: 0 6px 18px rgba(76, 175, 80, 0.5);
 }
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+    padding: 30px;
+    max-width: 90%;
+    width: 1300px;
     margin: 0 auto;
     position: relative;
     z-index: 1;
 }
 
 h2 {
-    font-size: 1.5em;
+    font-size: 1.7em;
     color: #1a7f36;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    font-weight: 500;
 }
 
+/* Inputs and Buttons */
 .input-group, .tool-group, .music-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
     align-items: center;
 }
 
 input, select, button {
-    padding: 10px 15px;
+    padding: 12px 18px;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 1em;
     transition: all 0.3s ease;
 }
 
 input {
-    background: #f0f4f8;
+    background: #f5f7fa;
     flex: 1;
-    min-width: 200px;
+    min-width: 220px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 input:focus {
     outline: none;
     background: #e8f5e9;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
 }
 
 select {
-    background: #c8e6c9;
+    background: #d0f0c0;
     color: #1a7f36;
+    cursor: pointer;
 }
 
 button {
     background: linear-gradient(135deg, #4caf50, #81c784);
     color: white;
     cursor: pointer;
-    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
 }
 
 button:hover {
     background: linear-gradient(135deg, #388e3c, #66bb6a);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.5);
 }
 
+/* Specific Elements */
 .suggestion, #timer, #sleep-tips, #daily-tip, #streak {
     color: #388e3c;
-    font-size: 1.1em;
-    margin-top: 10px;
-    animation: fadeIn 0.5s ease;
+    font-size: 1.15em;
+    margin-top: 12px;
+    animation: fadeIn 0.6s ease;
 }
 
 .chat-box {
-    max-height: 250px;
+    max-height: 280px;
     overflow-y: auto;
-    background: #f0f4f8;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
+    background: #f5f7fa;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .chat-box p {
-    padding: 8px;
-    border-radius: 5px;
-    margin: 5px 0;
-    animation: slideIn 0.3s ease;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 6px 0;
+    animation: slideIn 0.4s ease;
 }
 
 .chat-box .user-message {
@@ -188,26 +200,30 @@ button:hover {
 
 .history-card ul {
     list-style: none;
-    max-height: 200px;
+    max-height: 220px;
     overflow-y: auto;
 }
 
 .history-card li {
-    padding: 10px;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 12px;
+    border-bottom: 1px solid #e8ecef;
     transition: background 0.3s ease;
 }
 
 .history-card li:hover {
-    background: #f5f5f5;
+    background: #f8fafc;
 }
 
 #moodChart {
     background: white;
-    padding: 10px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    display: none; /* Hidden by default */
+    max-width: 100%;
+    height: auto;
 }
 
+/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -215,59 +231,114 @@ button:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.65);
     z-index: 1000;
 }
 
 .modal-content {
     background: #fff;
-    margin: 10% auto;
-    padding: 20px;
+    margin: 15% auto;
+    padding: 25px;
     width: 90%;
-    max-width: 400px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    max-width: 450px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 .close {
     float: right;
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
+    color: #4caf50;
 }
 
 #auth-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 18px;
 }
 
 #forgot-password {
     color: #4caf50;
     cursor: pointer;
     text-align: center;
+    transition: color 0.3s ease;
 }
 
+#forgot-password:hover {
+    color: #388e3c;
+}
+
+/* Footer */
 .footer {
     text-align: center;
-    padding: 20px;
+    padding: 25px;
     color: #fff;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
     position: relative;
     z-index: 1;
+    font-size: 0.9em;
 }
 
+/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
 @keyframes slideIn {
-    from { transform: translateX(-20px); opacity: 0; }
+    from { transform: translateX(-25px); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 
-@media (max-width: 600px) {
+/* Responsive Design */
+@media (max-width: 768px) {
     .grid-container {
         grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .header {
+        padding: 20px;
+        margin: 15px auto;
+    }
+
+    h1 {
+        font-size: 2.2em;
+    }
+
+    .compass-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    input, select, button {
+        padding: 10px 14px;
+        font-size: 0.95em;
+    }
+}
+
+@media (max-width: 480px) {
+    .input-group, .tool-group, .music-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    input, select, button {
+        width: 100%;
+        min-width: unset;
+    }
+
+    h2 {
+        font-size: 1.4em;
+    }
+
+    .modal-content {
+        margin: 20% auto;
+        padding: 20px;
     }
 }
