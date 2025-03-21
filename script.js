@@ -202,6 +202,7 @@ function showMoodChart() {
         data: { labels, datasets },
         options: { scales: { y: { beginAtZero: true } } }
     });
+    canvas.style.display = 'block';
 }
 
 // History and sharing
