@@ -1,154 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CalmCompass</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon-180x180.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS GRID PROJECT-1</title>
+
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="overlay"></div>
-  <header class="header">
-    <div class="logo">
-      <img src="images/compass.png" alt="Compass Icon" class="compass-icon" id="compass-icon" />
-      <h1>CalmCompass</h1>
+    <div class="container">
+        <div class="item"><img src="images/image-daniel.jpg" alt=""><h6>Daniel Clifford</h6><br><p>Verified Graduate</p>
+        <h2>I received a job offer mid-course, and the subjects I learned were current, if not more so, in the company I joined. I honestly feel I got every penny's worth.</h2>
+    <p>"I was an EMT for many years befre I joined the bootcamp. I've been looking to make a transition and have heard some people who had an amazing experienc here. I signed up for the free intro course and found it incredibly fun! I enrolled shortly thereafter. The next 12 weeks was the best - and most grueling - time of my life. Since completing the course, I've successfully switched careers, working as a Software Engineer at a VR startup."</p></div>
+        <div class="item">item 2</div>
+        <div class="item">item 3</div>
+        <div class="item">item 4</div>
+        <div class="item">item 5</div>
+        <div class="item">item 6</div>
+        <div class="item">item 7</div>
+        <!-- <div class="item">item 8</div> -->
+
     </div>
-    <p class="subtitle">Navigate Life Sustainably</p>
-    <nav class="nav">
-      <button onclick="showAuthModal('login')">Login</button>
-      <button onclick="showAuthModal('signup')">Signup</button>
-    </nav>
-  </header>
-
-  <main class="grid-container">
-    <section class="card stress-card">
-      <h2>How Are You Feeling?</h2>
-      <div class="input-group">
-        <input id="trigger" type="text" placeholder="What’s on your mind?">
-        <select id="tag">
-          <option value="work">Work</option>
-          <option value="family">Family</option>
-          <option value="relationships">Relationships</option>
-          <option value="health">Health</option>
-          <option value="other">Other</option>
-        </select>
-        <select id="mood">
-          <option value="happy">😊 Happy</option>
-          <option value="anxious">😟 Anxious</option>
-          <option value="tired">😴 Tired</option>
-          <option value="angry">😡 Angry</option>
-          <option value="calm">😌 Calm</option>
-        </select>
-        <button onclick="saveTrigger()">Submit</button>
-      </div>
-      <p id="suggestion" class="suggestion"></p>
-    </section>
-
-    <section class="card tools-card">
-      <h2>Calming Tools</h2>
-      <div class="tool-group">
-        <select id="breathing-duration">
-          <option value="30">30s</option>
-          <option value="60" selected>1min</option>
-          <option value="120">2min</option>
-        </select>
-        <button onclick="startBreathing()">Guided Breathing</button>
-        <label><input type="checkbox" id="sound-toggle"> Sound</label>
-        <p id="timer"></p>
-      </div>
-      <button onclick="showSleepTips()">Sleep Tips</button>
-      <p id="sleep-tips"></p>
-      <div class="music-group">
-        <h3>Sounds</h3>
-        <select id="bg-sound">
-          <option value="relaxing">Relaxing Music</option>
-          <option value="waves">Ocean Waves</option>
-          <option value="forest">Forest Ambience</option>
-          <option value="rain">Rainfall</option>
-        </select>
-        <button onclick="playBackgroundSound()">Play</button>
-        <button onclick="stopBackgroundSound()">Stop</button>
-      </div>
-    </section>
-
-    <section class="card chat-card">
-      <h2>AI Chat</h2>
-      <div class="chat-box" id="chat-box"></div>
-      <div class="input-group">
-        <input id="chat-input" type="text" placeholder="Ask me anything...">
-        <input id="chat-file" type="file" accept="image/*,audio/*">
-        <button onclick="sendMessage()">Send</button>
-      </div>
-    </section>
-
-    <section class="card insights-card">
-      <h2>Your Insights</h2>
-      <div class="extras">
-        <label><input type="checkbox" id="daily-reminder" onchange="toggleReminder()"> Reminder</label>
-        <p id="daily-tip"></p>
-        <p id="streak">Streak: 0 days</p>
-      </div>
-      <button onclick="showMoodChart()">Mood Chart</button>
-      <canvas id="moodChart" width="400" height="200"></canvas>
-      <button onclick="downloadHistory()">Download</button>
-      <button onclick="shareHistory()">Share</button>
-      <button onclick="sendInvite()">Invite</button>
-      <input type="email" id="invite-email" placeholder="Friend's email" style="margin-top: 10px;">
-    </section>
-
-    <section class="card settings-card">
-      <h2>Settings</h2>
-      <div class="input-group">
-        <label>Speed:</label>
-        <select id="response-speed">
-          <option value="fast">Fast</option>
-          <option value="normal" selected>Normal</option>
-          <option value="slow">Slow</option>
-        </select>
-        <label>Background:</label>
-        <select id="bg-image" onchange="changeBackground()">
-          <option value="nature1">Forest</option>
-          <option value="nature2">Mountains</option>
-          <option value="nature3">Ocean</option>
-          <option value="nature4">Stars</option>
-        </select>
-      </div>
-    </section>
-
-    <section class="card history-card">
-      <h2>Your Journey</h2>
-      <ul id="history"></ul>
-    </section>
-  </main>
-
-  <div id="auth-modal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeAuthModal()">×</span>
-      <h2 id="modal-title"></h2>
-      <form id="auth-form">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit">Submit</button>
-        <p id="forgot-password" onclick="showForgotPassword()">Forgot Password?</p>
-      </form>
-      <p id="auth-message"></p>
-    </div>
-  </div>
-
-  <audio id="relaxing-sound" src="audio/relaxing.mp3" loop></audio>
-  <audio id="waves-sound" src="audio/waves.mp3" loop></audio>
-  <audio id="forest-sound" src="audio/forest.mp3" loop></audio>
-  <audio id="rain-sound" src="audio/rain.mp3" loop></audio>
-
-  <footer class="footer">
-    <p>© 2025 iExtreme Solutions</p>
-  </footer>
-  <script src="script.js" defer></script>
 </body>
 </html>
