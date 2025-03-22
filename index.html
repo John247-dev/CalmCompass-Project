@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CalmCompass</title>
   <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;500&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="icon" type="image/x-icon" href="images/favicon.ico">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
@@ -44,6 +44,7 @@
           <option value="tired">😴 Tired</option>
           <option value="angry">😡 Angry</option>
           <option value="calm">😌 Calm</option>
+          <option value="sad">😢 Sad</option>
         </select>
         <button onclick="saveTrigger()">Submit</button>
       </div>
@@ -59,7 +60,10 @@
           <option value="120">2min</option>
         </select>
         <button onclick="startBreathing()">Guided Breathing</button>
-        <label><input type="checkbox" id="sound-toggle"> Sound</label>
+        <div class="checkbox-group">
+          <label>Sound <input type="checkbox" id="sound-toggle"></label>
+          <label>Reminder <input type="checkbox" id="breathing-reminder"></label>
+        </div>
         <p id="timer"></p>
       </div>
       <button onclick="showSleepTips()">Sleep Tips</button>
@@ -77,20 +81,9 @@
       </div>
     </section>
 
-    <section class="card chat-card">
-      <h2>Get help through chat</h2>
-      <div class="chat-box" id="chat-box"></div>
-      <div class="input-group">
-        <input id="chat-input" type="text" placeholder="Ask me anything...">
-        <input id="chat-file" type="file" accept="image/*,audio/*">
-        <button onclick="sendMessage()">Send</button>
-      </div>
-    </section>
-
     <section class="card insights-card">
       <h2>Your Insights</h2>
       <div class="extras">
-        <label><input type="checkbox" id="daily-reminder" onchange="toggleReminder()"> Reminder</label>
         <p id="daily-tip"></p>
         <p id="streak">Streak: 0 days</p>
       </div>
@@ -98,21 +91,40 @@
       <canvas id="moodChart" width="400" height="200"></canvas>
       <button onclick="downloadHistory()">Download</button>
       <button onclick="shareHistory()">Share</button>
-      <button onclick="sendInvite()">Invite</button>
-      <input type="email" id="invite-email" placeholder="" style="margin-top: 10px;">
+      <br><button onclick="sendInvite()">Invite</button>
+      <input type="email" id="invite-email" placeholder="Enter friend's email" style="margin-top: 10px;">
     </section>
 
-    <section class="card settings-card">
+    <section class="card history-card">
+      <h2>Your Journey</h2>
+      <ul id="history"></ul>
+    </section>
+
+    <section class="card testimonials-card">
+      <h2>Testimonials</h2>
+      <div class="testimonial-group">
+        <p>"CalmCompass helped me find peace during stressful workdays!" - Sarah K.</p>
+        <p>"The breathing exercises are a game-changer. Highly recommend!" - James L.</p>
+        <p>"I love the mood tracking—keeps me in tune with myself." - Priya M.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="settings-icon" onclick="toggleSettings()">
+    <img src="images/settings-gear.png" alt="Settings" />
+  </div>
+
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="toggleSettings()">×</span>
       <h2>Settings</h2>
       <div class="input-group">
-        <label>Speed:</label>
-        <select id="response-speed">
-          <option value="fast">Fast</option>
-          <option value="normal" selected>Normal</option>
-          <option value="slow">Slow</option>
+        <label>Notifications:</label>
+        <select id="notifications">
+          <option value="on">On</option>
+          <option value="off" selected>Off</option>
         </select>
-
-        <label>Background:</label>
+        <label>Background Display:</label>
         <select id="bg-image" onchange="changeBackground()">
           <option value="nature1">Forest</option>
           <option value="nature2">Mountains</option>
@@ -120,25 +132,42 @@
           <option value="nature4">Stars</option>
         </select>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <section class="card history-card">
-      <h2>Your Journey</h2>
-      <ul id="history"></ul>
-    </section>
-  </main>
+  <div class="chat-icon" onclick="toggleChat()">
+    <img src="images/chat icon.png" alt="Chat" />
+  </div>
+  <div id="chat-modal" class="chat-modal">
+    <div class="chat-modal-content">
+      <span class="close-chat" onclick="toggleChat()">×</span>
+      <h2>Get Help Through Chat</h2>
+      <div class="chat-box" id="chat-box"></div>
+      <div class="input-group">
+        <input id="chat-input" type="text" placeholder="Ask me anything...">
+        <input id="chat-file" type="file" accept="image/*,audio/*">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
 
   <div id="auth-modal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeAuthModal()">×</span>
       <h2 id="modal-title"></h2>
       <form id="auth-form">
-        <input type="text" id="username" placeholder="Username" required>
+        <input type="text" id="login-id" placeholder="Login ID" required>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="text" id="name" placeholder="Your Name" required>
+        <input type="text" id="location" placeholder="State, Country" required>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" required>
         <input type="password" id="password" placeholder="Password" required>
+        <label><input type="checkbox" id="terms" required> I agree to the <a href="#">Terms</a> & <a href="#">Privacy Policy</a></label>
         <button type="submit">Submit</button>
-        <p id="forgot-password" onclick="showForgotPassword()">Forgot Password?</p>
       </form>
       <p id="auth-message"></p>
+      <p id="forgot-password" onclick="showForgotPassword()">Forgot Password?</p>
     </div>
   </div>
 
