@@ -30,7 +30,7 @@ body {
     position: relative;
     z-index: 1;
     text-align: center;
-    padding: 25px;
+    padding: 30px;
     background: rgba(255, 255, 255, 0.92);
     border-radius: 25px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -47,29 +47,35 @@ body {
 }
 
 .compass-icon {
-    width: 90px;
-    height: 90px;
-    transition: transform 0.2s ease, filter 0.3s ease;
+    width: 100px;
+    height: 100px;
+    transition: transform 0.3s ease, filter 0.3s ease;
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+    animation: rotateCompass 10s infinite linear;
 }
 
-.compass-icon:hover {
-    filter: drop-shadow(0 8px 20px rgba(76, 175, 80, 0.7)) brightness(1.15);
-    transform: scale(1.15) rotate(10deg);
+@keyframes rotateCompass {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 h1 {
-    font-size: 2.8em;
+    font-family: 'Roboto Slab', serif; /* Changed font for 3D effect */
+    font-size: 3.8em;
     font-weight: 700;
     color: #1a7f36;
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3), -2px -2px 4px rgba(255, 255, 255, 0.5); /* 3D effect */
 }
 
 .subtitle {
-    font-size: 1.3em;
+    font-size: 1em; /* Smaller font */
     color: #4caf50;
     font-weight: 300;
     margin-top: 5px;
+    text-align: right; /* Moved to right */
+    position: absolute;
+    right: 40px;
+    top: 80px;
 }
 
 .nav {
@@ -93,10 +99,6 @@ h1 {
     box-shadow: 0 12px 30px rgba(76, 175, 80, 0.35);
 }
 
-.card:active {
-    box-shadow: 0 6px 18px rgba(76, 175, 80, 0.5);
-}
-
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -117,11 +119,30 @@ h2 {
 }
 
 /* Inputs and Buttons */
-.input-group, .tool-group, .music-group {
+.input-group, .tool-group, .music-group, .testimonial-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 15px;
     align-items: center;
+}
+
+.testimonial-group p {
+    background: #e8f5e9;
+    padding: 10px;
+    border-radius: 10px;
+    font-style: italic;
+    color: #388e3c;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 20px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 input, select, button {
@@ -173,7 +194,7 @@ button:hover {
 }
 
 .chat-box {
-    max-height: 280px;
+    max-height: 300px;
     overflow-y: auto;
     background: #f5f7fa;
     padding: 12px;
@@ -218,13 +239,47 @@ button:hover {
     background: white;
     padding: 12px;
     border-radius: 12px;
-    display: none; /* Hidden by default */
+    display: none;
     max-width: 100%;
     height: auto;
 }
 
-/* Modal */
-.modal {
+/* Chat Icon */
+.chat-icon {
+    position: fixed;
+    top: 20px;
+    right: 80px; /* Adjusted for settings icon */
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.chat-icon img {
+    width: 50px; /* Bigger size */
+    height: 50px;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+}
+
+/* Settings Icon */
+.settings-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.settings-icon img {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s ease;
+}
+
+.settings-icon:hover img {
+    transform: rotate(90deg);
+}
+
+/* Modals */
+.chat-modal, .modal {
     display: none;
     position: fixed;
     top: 0;
@@ -235,17 +290,17 @@ button:hover {
     z-index: 1000;
 }
 
-.modal-content {
+.chat-modal-content, .modal-content {
     background: #fff;
-    margin: 15% auto;
+    margin: 10% auto;
     padding: 25px;
     width: 90%;
-    max-width: 450px;
+    max-width: 500px;
     border-radius: 20px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
-.close {
+.close-chat, .close {
     float: right;
     font-size: 28px;
     cursor: pointer;
@@ -255,7 +310,21 @@ button:hover {
 #auth-form {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 15px;
+}
+
+#auth-form label {
+    color: #1a7f36;
+    font-weight: 500;
+}
+
+#auth-form a {
+    color: #4caf50;
+    text-decoration: none;
+}
+
+#auth-form a:hover {
+    text-decoration: underline;
 }
 
 #forgot-password {
@@ -304,28 +373,40 @@ button:hover {
     }
 
     h1 {
-        font-size: 2.2em;
+        font-size: 2.8em;
+    }
+
+    .subtitle {
+        font-size: 0.9em;
+        right: 20px;
+        top: 70px;
     }
 
     .compass-icon {
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
     }
 
-    .card {
-        padding: 20px;
+    .chat-icon img {
+        width: 45px;
+        height: 45px;
     }
 
-    input, select, button {
-        padding: 10px 14px;
-        font-size: 0.95em;
+    .settings-icon img {
+        width: 35px;
+        height: 35px;
     }
 }
 
 @media (max-width: 480px) {
-    .input-group, .tool-group, .music-group {
+    .input-group, .tool-group, .music-group, .testimonial-group {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .checkbox-group {
+        flex-direction: column;
+        gap: 10px;
     }
 
     input, select, button {
@@ -337,8 +418,13 @@ button:hover {
         font-size: 1.4em;
     }
 
-    .modal-content {
-        margin: 20% auto;
+    .chat-modal-content, .modal-content {
+        margin: 15% auto;
         padding: 20px;
+    }
+
+    .chat-icon img {
+        width: 40px;
+        height: 40px;
     }
 }
