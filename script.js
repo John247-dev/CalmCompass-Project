@@ -5,32 +5,13 @@ let lastDate = localStorage.getItem('lastDate') || null;
 let moodData = JSON.parse(localStorage.getItem('moodData')) || {};
 let chartInstance = null;
 let currentAudio = null;
+let users = JSON.parse(localStorage.getItem('users')) || {};
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     updateHistory();
     updateStreak();
-    updateCompass();
 });
-
-// Compass functionality
-function updateCompass() {
-    if ('DeviceOrientationEvent' in window) {
-        window.addEventListener('deviceorientation', (event) => {
-            const compass = document.getElementById('compass-icon');
-            const heading = event.webkitCompassHeading || event.alpha;
-            if (heading !== null) {
-                compass.style.transform = `rotate(${-heading}deg)`;
-            }
-        });
-    } else {
-        let angle = 0;
-        setInterval(() => {
-            angle = (angle + 1) % 360;
-            document.getElementById('compass-icon').style.transform = `rotate(${angle}deg)`;
-        }, 50);
-    }
-}
 
 // Save trigger and provide suggestion
 function saveTrigger() {
@@ -55,18 +36,23 @@ function provideSuggestion(trigger, tag, mood) {
         anxious: `Anxious about ${tag}? Try this: breathe in for 4, hold for 4, exhale for 4. Feel better?`,
         tired: `Tired from ${tag}? Take a moment to rest with some ocean waves—want to try?`,
         angry: `Angry about ${tag}? Let’s release it: imagine blowing it away with each breath.`,
-        calm: `Calm amidst ${tag}? Perfect—enhance it with forest sounds or a quiet moment.`
+        calm: `Calm amidst ${tag}? Perfect—enhance it with forest sounds or a quiet moment.`,
+        sad: `Feeling sad about ${tag}? It’s okay—try some rainfall sounds or share what’s on your mind in the chat.`,
     };
     document.getElementById('suggestion').textContent = suggestions[mood] || 'Tell me more!';
 }
 
-// Guided breathing exercise
+// Guided breathing exercise (adjusted timing)
 function startBreathing() {
     const duration = parseInt(document.getElementById('breathing-duration').value);
     const soundToggle = document.getElementById('sound-toggle').checked;
+    const reminderToggle = document.getElementById('breathing-reminder').checked;
     const timer = document.getElementById('timer');
     let timeLeft = duration;
-    timer.textContent = `Inhale... (${timeLeft}s)`;
+    let inhaleTime = Math.floor(duration / 2); // Equal inhale/exhale
+    let exhaleTime = duration - inhaleTime;
+    let phase = 'inhale';
+    timer.textContent = `Inhale... (${inhaleTime}s)`;
 
     if (soundToggle) {
         stopBackgroundSound();
@@ -74,16 +60,16 @@ function startBreathing() {
         currentAudio.play();
     }
 
-    let phase = 'inhale';
     const interval = setInterval(() => {
         timeLeft--;
-        if (phase === 'inhale' && timeLeft <= duration / 2) {
+        if (phase === 'inhale' && timeLeft < exhaleTime) {
             phase = 'exhale';
             timer.textContent = `Exhale... (${timeLeft}s)`;
         } else if (timeLeft <= 0) {
             clearInterval(interval);
             timer.textContent = 'Well done!';
             if (soundToggle) currentAudio.pause();
+            if (reminderToggle) setTimeout(() => alert('Time for another breathing session!'), 60 * 60 * 1000);
         } else {
             timer.textContent = `${phase === 'inhale' ? 'Inhale' : 'Exhale'}... (${timeLeft}s)`;
         }
@@ -116,7 +102,7 @@ function stopBackgroundSound() {
     }
 }
 
-// AI Chat
+// AI Chat (enhanced reasoning)
 function sendMessage() {
     const input = document.getElementById('chat-input').value;
     const fileInput = document.getElementById('chat-file');
@@ -135,11 +121,6 @@ function sendMessage() {
                 img.src = URL.createObjectURL(file);
                 img.style.maxWidth = '200px';
                 chatBox.appendChild(img);
-            } else if (file.type.startsWith('audio/')) {
-                const audio = document.createElement('audio');
-                audio.controls = true;
-                audio.src = URL.createObjectURL(file);
-                chatBox.appendChild(audio);
             }
         }
 
@@ -149,7 +130,7 @@ function sendMessage() {
             aiResponse.textContent = generateAIResponse(input, fileInput.files[0]);
             chatBox.appendChild(aiResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
-        }, adjustResponseSpeed());
+        }, 1000); // Fixed normal response speed
 
         document.getElementById('chat-input').value = '';
         fileInput.value = '';
@@ -157,19 +138,31 @@ function sendMessage() {
 }
 
 function generateAIResponse(input, file) {
-    if (file) {
-        if (file.type.startsWith('image/')) return `Wow, nice image! What’s the story behind it?`;
-        if (file.type.startsWith('audio/')) return `I heard your voice—tell me more about what’s on your mind!`;
+    if (file && file.type.startsWith('image/')) {
+        return `I see your image! It looks like something’s bothering you—can you tell me more so I can assist you better?`;
     }
-    if (!input) return 'What’s up? I’m here to help!';
-    if (input.toLowerCase().includes('stress')) return `Stress, huh? Let’s breathe it out—try the guided breathing tool!`;
-    if (input.toLowerCase().includes('sleep')) return `Sleep troubles? How about rain sounds and a dark room?`;
-    return `You said: "${input}". Let’s tackle it—any ideas on what might help?`;
+    if (!input) return 'Hey, I’m here to help—feeling stressed, anxious, or something else?';
+    if (input.toLowerCase().includes('stress') || input.toLowerCase().includes('anxiety')) {
+        return `It sounds like you’re dealing with some ${input.toLowerCase().includes('stress') ? 'stress' : 'anxiety'}. How about trying the guided breathing exercise for 1 minute? It can help calm your mind. Or, tell me more about what’s going on—I’m here to listen.`;
+    }
+    if (input.toLowerCase().includes('sleep')) {
+        return `Struggling with sleep? Try the rain sounds under Calming Tools and keep your room cool and dark. Want more tips?`;
+    }
+    if (input.toLowerCase().includes('burnout')) {
+        return `Burnout can be tough. Take a break with some forest ambience and track your mood daily—it might reveal patterns. Want to talk it out or connect with a counselor?`;
+    }
+    return `You mentioned "${input}". I’m here to support you—could it be related to work, health, or something else? Let’s figure it out together!`;
 }
 
-function adjustResponseSpeed() {
-    const speed = document.getElementById('response-speed').value;
-    return { fast: 300, normal: 1000, slow: 2000 }[speed];
+// Toggle Chat Modal
+function toggleChat() {
+    const modal = document.getElementById('chat-modal');
+    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+}
+
+function toggleSettings() {
+    const modal = document.getElementById('settings-modal');
+    modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
 }
 
 // Mood chart
@@ -182,6 +175,7 @@ function updateMoodData(mood) {
 
 function showMoodChart() {
     const ctx = document.getElementById('moodChart').getContext('2d');
+    document.getElementById('moodChart').style.display = 'block'; // Ensure visibility
     const labels = Object.keys(moodData);
     const moods = ['happy', 'anxious', 'tired', 'angry', 'calm'];
     const datasets = moods.map(mood => ({
@@ -202,7 +196,6 @@ function showMoodChart() {
         data: { labels, datasets },
         options: { scales: { y: { beginAtZero: true } } }
     });
-    canvas.style.display = 'block';
 }
 
 // History and sharing
@@ -237,7 +230,7 @@ function shareHistory() {
     }
 }
 
-// Streak and reminders
+// Streak
 function updateStreak() {
     const today = new Date().toLocaleDateString();
     if (lastDate && lastDate !== today) {
@@ -250,15 +243,6 @@ function updateStreak() {
     localStorage.setItem('streak', streak);
     localStorage.setItem('lastDate', today);
     document.getElementById('streak').textContent = `Streak: ${streak} days`;
-}
-
-function toggleReminder() {
-    const enabled = document.getElementById('daily-reminder').checked;
-    if (enabled) {
-        setInterval(() => {
-            document.getElementById('daily-tip').textContent = 'Take a deep breath—how’s your day going?';
-        }, 24 * 60 * 60 * 1000);
-    }
 }
 
 // Background change
@@ -274,8 +258,6 @@ function changeBackground() {
 }
 
 // Authentication
-let users = JSON.parse(localStorage.getItem('users')) || {};
-
 function showAuthModal(type) {
     const modal = document.getElementById('auth-modal');
     const title = document.getElementById('modal-title');
@@ -283,6 +265,19 @@ function showAuthModal(type) {
     modal.style.display = 'block';
     title.textContent = type === 'login' ? 'Login' : 'Signup';
     form.onsubmit = type === 'login' ? handleLogin : handleSignup;
+    if (type === 'login') {
+        document.getElementById('email').style.display = 'none';
+        document.getElementById('name').style.display = 'none';
+        document.getElementById('location').style.display = 'none';
+        document.getElementById('dob').style.display = 'none';
+        document.getElementById('terms').parentElement.style.display = 'none';
+    } else {
+        document.getElementById('email').style.display = 'block';
+        document.getElementById('name').style.display = 'block';
+        document.getElementById('location').style.display = 'block';
+        document.getElementById('dob').style.display = 'block';
+        document.getElementById('terms').parentElement.style.display = 'block';
+    }
 }
 
 function closeAuthModal() {
@@ -292,9 +287,9 @@ function closeAuthModal() {
 
 function handleLogin(e) {
     e.preventDefault();
-    const username = document.getElementById('username').value;
+    const loginId = document.getElementById('login-id').value;
     const password = document.getElementById('password').value;
-    if (users[username] && users[username].password === password) {
+    if (users[loginId] && users[loginId].password === password) {
         document.getElementById('auth-message').textContent = 'Login successful!';
         setTimeout(closeAuthModal, 1000);
     } else {
@@ -304,23 +299,33 @@ function handleLogin(e) {
 
 function handleSignup(e) {
     e.preventDefault();
-    const username = document.getElementById('username').value;
+    const loginId = document.getElementById('login-id').value;
+    const email = document.getElementById('email').value;
+    const name = document.getElementById('name').value;
+    const location = document.getElementById('location').value;
+    const dob = document.getElementById('dob').value;
     const password = document.getElementById('password').value;
-    if (!users[username]) {
-        users[username] = { password };
+    const terms = document.getElementById('terms').checked;
+
+    if (!terms) {
+        document.getElementById('auth-message').textContent = 'Please agree to the terms.';
+        return;
+    }
+    if (!users[loginId]) {
+        users[loginId] = { email, name, location, dob, password };
         localStorage.setItem('users', JSON.stringify(users));
         document.getElementById('auth-message').textContent = 'Signup successful! Please login.';
     } else {
-        document.getElementById('auth-message').textContent = 'Username already exists.';
+        document.getElementById('auth-message').textContent = 'Login ID already exists.';
     }
 }
 
 function showForgotPassword() {
-    const username = prompt('Enter your username:');
-    if (users[username]) {
-        alert(`Your password is: ${users[username].password}`);
+    const loginId = prompt('Enter your Login ID:');
+    if (users[loginId]) {
+        alert(`Your password is: ${users[loginId].password}`);
     } else {
-        alert('Username not found.');
+        alert('Login ID not found.');
     }
 }
 
